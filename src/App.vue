@@ -1,5 +1,5 @@
 <script setup>
-import GreetingMessage from './components/GreetingMessage.vue'
+import GreetingMessage from './features/greeting/components/GreetingMessage.vue'
 </script>
 
 <template>
