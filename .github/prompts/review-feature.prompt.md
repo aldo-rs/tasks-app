@@ -5,10 +5,6 @@ description: Review a frontend feature implementation
 
 Review the following feature implementation.
 
-# Feature
-
-{{feature}}
-
 # Scope to review
 
 {{scope}}

@@ -4,8 +4,13 @@ import { mount } from '@vue/test-utils'
 import App from '../App.vue'
 
 describe('App', () => {
-  it('mounts renders properly', () => {
+  it('should render the app title', () => {
     const wrapper = mount(App)
-    expect(wrapper.text()).toContain('You did it!')
+    expect(wrapper.text()).toContain('POC for learning Vue 3!')
+  })
+
+  it('should display a greeting in the app', () => {
+    const wrapper = mount(App)
+    expect(wrapper.text()).toContain('Hello')
   })
 })
