@@ -2,7 +2,7 @@
 
 ## Project context
 
-This repository is a learning-oriented frontend POC for a simple todo app.
+This repository is a learning-oriented frontend POC for a simple tasks-app.
 
 The goal is to learn and practice a modern frontend stack while building a small, well-structured application.
 
