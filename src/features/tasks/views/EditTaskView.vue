@@ -142,26 +142,30 @@ function deleteCurrentTask() {
       <form class="edit-task-form" @submit.prevent="saveTask">
         <div class="edit-task-field">
           <label class="edit-task-label" for="task-name">Nombre</label>
-          <IonInput
-            id="task-name"
-            v-model="title"
-            class="edit-task-input"
-            placeholder="Ej: Revisar documentos"
-            :maxlength="100"
-            autocomplete="off"
-          />
+          <div class="edit-task-input-wrapper">
+            <IonInput
+              id="task-name"
+              v-model="title"
+              class="edit-task-input"
+              placeholder="Ej: Revisar documentos"
+              :maxlength="100"
+              autocomplete="off"
+            />
+          </div>
         </div>
 
         <div class="edit-task-field">
           <label class="edit-task-label" for="task-description">Descripción</label>
-          <IonTextarea
-            id="task-description"
-            v-model="description"
-            class="edit-task-textarea"
-            placeholder="Describe los detalles de la tarea"
-            :maxlength="100"
-            :rows="4"
-          />
+          <div class="edit-task-input-wrapper">
+            <IonTextarea
+              id="task-description"
+              v-model="description"
+              class="edit-task-textarea"
+              placeholder="Describe los detalles de la tarea"
+              :maxlength="100"
+              :rows="4"
+            />
+          </div>
           <p class="edit-task-hint">Máximo 100 caracteres</p>
         </div>
 
@@ -264,6 +268,17 @@ function deleteCurrentTask() {
   color: var(--color-text);
 }
 
+.edit-task-input-wrapper {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.edit-task-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
 .edit-task-input,
 .edit-task-textarea {
   --background: var(--color-bg);
@@ -276,16 +291,8 @@ function deleteCurrentTask() {
   --padding-end: var(--space-md);
   --padding-top: 14px;
   --padding-bottom: 14px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
   font-family: var(--font-family);
   font-size: 0.95rem;
-  transition: border-color 0.2s;
-}
-
-.edit-task-input:focus-within,
-.edit-task-textarea:focus-within {
-  border-color: var(--color-primary);
 }
 
 .edit-task-hint {

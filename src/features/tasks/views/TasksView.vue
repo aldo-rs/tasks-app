@@ -1,49 +1,112 @@
 <script setup>
+import {
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/vue'
+import { useRouter } from 'vue-router'
+import { add } from 'ionicons/icons'
 import { useTasksStore } from '../store/useTasksStore'
 import TaskList from '../components/TaskList.vue'
-import FloatingButton from '../../../shared/components/FloatingButton.vue'
 
+const router = useRouter()
 const store = useTasksStore()
+
+function handleToggleTask(taskId) {
+  store.toggleTask(taskId)
+}
+
+function handleEditTask(taskId) {
+  router.push(`/tasks/${taskId}/edit`)
+}
 </script>
 
 <template>
-  <div class="tasks-view">
-    <header class="tasks-header">
-      <h1 class="tasks-title">Mis Tareas</h1>
-    </header>
+  <IonPage>
+    <IonHeader class="tasks-header">
+      <IonToolbar class="tasks-toolbar">
+        <IonTitle class="tasks-title">Mis Tareas</IonTitle>
+      </IonToolbar>
+    </IonHeader>
 
-    <main class="tasks-content">
-      <TaskList :pending-tasks="store.pendingTasks" :completed-tasks="store.completedTasks" />
-    </main>
+    <IonContent class="tasks-content">
+      <TaskList
+        :pending-tasks="store.pendingTasks"
+        :completed-tasks="store.completedTasks"
+        @toggle-task="handleToggleTask"
+        @edit-task="handleEditTask"
+      />
 
-    <FloatingButton aria-label="Añadir tarea" />
-  </div>
+      <IonFab slot="fixed" vertical="bottom" horizontal="end">
+        <IonFabButton
+          color="pdm-primary"
+          aria-label="Añadir tarea"
+          @click="router.push('/tasks/new')"
+        >
+          <IonIcon :icon="add" />
+        </IonFabButton>
+      </IonFab>
+    </IonContent>
+  </IonPage>
 </template>
 
 <style scoped>
-.tasks-view {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-  background-color: var(--color-bg-soft);
+.tasks-header,
+.tasks-toolbar {
+  border: 0;
+  box-shadow: none;
 }
 
-.tasks-header {
-  background-color: var(--color-bg);
-  padding: var(--space-xl) var(--space-md) var(--space-md);
-  text-align: center;
-  border-bottom: 1px solid var(--color-bg-secondary);
+.tasks-toolbar {
+  --background: var(--color-bg);
+  --min-height: 72px;
+  --border-width: 0;
+  --border-color: transparent;
+  --box-shadow: none;
+}
+
+/* Ionic can draw the divider with pseudo-elements (mode-specific). */
+.tasks-header::after,
+.tasks-toolbar::after,
+:deep(ion-header.tasks-header.header-ios)::after,
+:deep(ion-header.tasks-header.header-md)::after,
+:deep(ion-toolbar.tasks-toolbar.toolbar-ios)::after,
+:deep(ion-toolbar.tasks-toolbar.toolbar-md)::after {
+  display: none !important;
+  height: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .tasks-title {
+  text-align: center;
   font-size: 1.5rem;
   font-weight: var(--font-weight-title);
+  font-family: var(--font-family);
   color: var(--color-text);
-  letter-spacing: -0.01em;
+  padding-inline: 0;
+}
+
+/* Small per-mode tweak so title appears visually centered in iOS and MD */
+:global(.ios) .tasks-title {
+  transform: translateX(-2px);
+}
+
+:global(.md) .tasks-title {
+  transform: translateX(-1px);
 }
 
 .tasks-content {
-  flex: 1;
-  padding: var(--space-md);
+  --background: var(--color-bg);
+  --padding-top: var(--space-sm);
+  --padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
+  --padding-start: var(--space-md);
+  --padding-end: var(--space-md);
 }
 </style>

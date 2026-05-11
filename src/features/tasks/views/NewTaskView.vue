@@ -38,26 +38,30 @@ onIonViewWillEnter(() => {
 
         <div class="new-task-field">
           <label class="new-task-label" for="task-name">Nombre</label>
-          <IonInput
-            id="task-name"
-            v-model="title"
-            class="new-task-input"
-            placeholder="Ej: Revisar documentos"
-            :maxlength="100"
-            autocomplete="off"
-          />
+          <div class="new-task-input-wrapper">
+            <IonInput
+              id="task-name"
+              v-model="title"
+              class="new-task-input"
+              placeholder="Ej: Revisar documentos"
+              :maxlength="100"
+              autocomplete="off"
+            />
+          </div>
         </div>
 
         <div class="new-task-field">
           <label class="new-task-label" for="task-description">Descripción</label>
-          <IonTextarea
-            id="task-description"
-            v-model="description"
-            class="new-task-textarea"
-            placeholder="Describe los detalles de la tarea"
-            :maxlength="100"
-            :rows="4"
-          />
+          <div class="new-task-input-wrapper">
+            <IonTextarea
+              id="task-description"
+              v-model="description"
+              class="new-task-textarea"
+              placeholder="Describe los detalles de la tarea"
+              :maxlength="100"
+              :rows="4"
+            />
+          </div>
           <p class="new-task-hint">Máximo 100 caracteres</p>
         </div>
 
@@ -161,6 +165,17 @@ onIonViewWillEnter(() => {
   color: var(--color-text);
 }
 
+.new-task-input-wrapper {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.new-task-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
 .new-task-input {
   --background: var(--color-bg);
   --border-width: 0;
@@ -172,15 +187,8 @@ onIonViewWillEnter(() => {
   --padding-end: var(--space-md);
   --padding-top: 14px;
   --padding-bottom: 14px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
   font-family: var(--font-family);
   font-size: 0.95rem;
-  transition: border-color 0.2s;
-}
-
-.new-task-input:focus-within {
-  border-color: var(--color-primary);
 }
 
 .new-task-textarea {
@@ -194,15 +202,8 @@ onIonViewWillEnter(() => {
   --padding-end: var(--space-md);
   --padding-top: 14px;
   --padding-bottom: 14px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
   font-family: var(--font-family);
   font-size: 0.95rem;
-  transition: border-color 0.2s;
-}
-
-.new-task-textarea:focus-within {
-  border-color: var(--color-primary);
 }
 
 .new-task-hint {
