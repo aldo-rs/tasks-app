@@ -9,10 +9,23 @@ defineProps({
 
 <template>
   <div class="task-item" :class="{ 'task-item--completed': task.completed }">
-    <button class="task-item__toggle" :aria-label="task.completed ? 'Marcar pendiente' : 'Marcar completada'">
-      <span class="task-item__circle">
-        <svg v-if="task.completed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <button
+      class="task-item__toggle"
+      :class="{ 'task-item__toggle--completed': task.completed }"
+      :aria-label="task.completed ? 'Marcar pendiente' : 'Marcar completada'"
+    >
+      <span v-if="!task.completed" class="task-item__circle" />
+      <span v-else class="task-item__check" aria-hidden="true">
+        <svg
+          class="task-item__check-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </span>
@@ -31,7 +44,7 @@ defineProps({
   align-items: center;
   gap: var(--space-md);
   background-color: var(--color-bg);
-  border: 1px solid #CDCDCD;
+  border: 1px solid #cdcdcd;
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: background-color 0.2s;
@@ -39,7 +52,7 @@ defineProps({
 
 .task-item--completed {
   background-color: #f8f9fa;
-  border-color: #f8f9fa;
+  border-color: #e0e0e0;
 }
 
 .task-item__toggle {
@@ -47,6 +60,16 @@ defineProps({
   width: 28px;
   height: 28px;
   padding: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-item__toggle--completed {
+  width: 34px;
+  height: 34px;
 }
 
 .task-item__circle {
@@ -56,19 +79,23 @@ defineProps({
   width: 28px;
   height: 28px;
   border-radius: var(--radius-full);
-  border: 2px solid #7E7E7E;
+  border: 2px solid #7e7e7e;
   color: var(--color-primary);
   transition: border-color 0.2s;
 }
 
-.task-item--completed .task-item__circle {
-  border-color: var(--color-primary);
-  background-color: transparent;
+.task-item__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-primary);
 }
 
-.task-item__circle svg {
-  width: 14px;
-  height: 14px;
+.task-item__check-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .task-item__content {
@@ -88,7 +115,7 @@ defineProps({
 
 .task-item--completed .task-item__title {
   text-decoration: line-through;
-  color: var(--color-text-muted);
+  color: #565555;
 }
 
 .task-item__description {
@@ -100,5 +127,9 @@ defineProps({
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.task-item--completed .task-item__description {
+  color: #565555;
 }
 </style>

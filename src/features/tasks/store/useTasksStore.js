@@ -10,6 +10,12 @@ export const useTasksStore = defineStore('tasks', () => {
       description: 'Milk for my hijas',
       completed: false,
     }),
+    new Task({
+      id: '2',
+      title: 'Llamar a mamá',
+      description: 'Confirmar hora de la cena',
+      completed: true,
+    }),
   ])
 
   const pendingTasks = computed(() => tasks.value.filter((t) => !t.completed))

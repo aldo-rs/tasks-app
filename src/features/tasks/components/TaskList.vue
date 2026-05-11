@@ -1,5 +1,10 @@
 <script setup>
+import { ref } from 'vue'
+import { IonIcon } from '@ionic/vue'
+import { chevronDownOutline } from 'ionicons/icons'
 import TaskItem from './TaskItem.vue'
+
+const isCompletedCollapsed = ref(false)
 
 defineProps({
   pendingTasks: {
@@ -23,7 +28,26 @@ defineProps({
     </ul>
 
     <!-- Completed tasks -->
-    <ul v-if="completedTasks.length > 0" class="task-list__group task-list__group--completed">
+    <button
+      v-if="completedTasks.length > 0"
+      type="button"
+      class="task-list__completed-header"
+      :class="{ 'task-list__completed-header--with-pending': pendingTasks.length > 0 }"
+      @click="isCompletedCollapsed = !isCompletedCollapsed"
+    >
+      <IonIcon
+        :icon="chevronDownOutline"
+        class="task-list__completed-icon"
+        :class="{ 'task-list__completed-icon--collapsed': isCompletedCollapsed }"
+      />
+      <span>Completadas ({{ completedTasks.length }})</span>
+    </button>
+
+    <ul
+      v-if="completedTasks.length > 0"
+      v-show="!isCompletedCollapsed"
+      class="task-list__group task-list__group--completed"
+    >
       <li v-for="task in completedTasks" :key="task.id">
         <TaskItem :task="task" />
       </li>
@@ -54,7 +78,35 @@ defineProps({
 }
 
 .task-list__group--completed {
-  margin-top: var(--space-xs);
+  margin-top: 0;
+}
+
+.task-list__completed-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-xs) 0;
+  border: none;
+  background: transparent;
+  font-family: 'Poppins', var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.task-list__completed-header--with-pending {
+  margin-top: var(--space-md);
+}
+
+.task-list__completed-icon {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.task-list__completed-icon--collapsed {
+  transform: rotate(-90deg);
 }
 
 .task-list__empty {
