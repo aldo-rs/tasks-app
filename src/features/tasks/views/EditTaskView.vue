@@ -11,44 +11,17 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
-  alertController,
-  toastController,
 } from '@ionic/vue'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { ellipsisVertical } from 'ionicons/icons'
-import { Task } from '../domain/Task.js'
-import { useTasksStore } from '../store/useTasksStore.js'
-import { clearFocus } from '@/shared/utils/clearFocus.js'
+import { useEditTask } from '../composables/useEditTask.js'
 
-const route = useRoute()
-const router = useRouter()
-const store = useTasksStore()
+const { title, description, isFormValid, showTitleError, saveTask, deleteTask } = useEditTask()
 
-const title = ref('')
-const description = ref('')
+// --- Context menu (pure UI — stays in the view) ---
+
 const isMenuOpen = ref(false)
 const menuContainerRef = ref(null)
-
-const taskId = computed(() => String(route.params.id ?? ''))
-// Derived from Task.isValid() so validation logic stays in the domain.
-const isFormValid = computed(() => new Task({ id: '', title: title.value }).isValid())
-const showTitleError = computed(() => title.value.length > 0 && !isFormValid.value)
-
-// Watch taskId immediately so it also handles forward navigations to a different task.
-watch(
-  taskId,
-  (id) => {
-    const task = store.getTaskById(id)
-    if (!task) {
-      router.replace({ name: 'tasks.list' })
-      return
-    }
-    title.value = task.title
-    description.value = task.description
-  },
-  { immediate: true },
-)
 
 function closeMenu() {
   isMenuOpen.value = false
@@ -84,62 +57,14 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', handleOutsideInteraction, true)
 })
 
-async function saveTask() {
-  if (!isFormValid.value) return
-
-  const currentTask = store.getTaskById(taskId.value)
-  if (!currentTask) return
-
-  const updatedTask = new Task({
-    id: currentTask.id,
-    title: title.value.trim(),
-    description: description.value.trim(),
-    completed: currentTask.completed,
-  })
-
+async function handleDeleteTask() {
   closeMenu()
-  clearFocus()
-  store.updateTask(updatedTask)
-
-  const toast = await toastController.create({
-    message: 'Tarea guardada',
-    duration: 2000,
-    position: 'bottom',
-  })
-  toast.present()
-
-  router.push({ name: 'tasks.list' })
+  await deleteTask()
 }
 
-async function deleteCurrentTask() {
+async function handleSaveTask() {
   closeMenu()
-
-  const alert = await alertController.create({
-    header: 'Eliminar tarea',
-    message: '¿Estás seguro de que quieres eliminar esta tarea?',
-    buttons: [
-      { text: 'Cancelar', role: 'cancel' },
-      {
-        text: 'Eliminar',
-        role: 'destructive',
-        handler: async () => {
-          clearFocus()
-          store.deleteTask(taskId.value)
-
-          const toast = await toastController.create({
-            message: 'Tarea eliminada',
-            duration: 2000,
-            position: 'bottom',
-          })
-          toast.present()
-
-          router.push({ name: 'tasks.list' })
-        },
-      },
-    ],
-  })
-
-  await alert.present()
+  await saveTask()
 }
 </script>
 
@@ -166,14 +91,14 @@ async function deleteCurrentTask() {
             @pointerdown.stop
             @click.stop
           >
-            <button type="button" class="edit-task-menu-delete" @click.stop="deleteCurrentTask">Eliminar</button>
+            <button type="button" class="edit-task-menu-delete" @click.stop="handleDeleteTask">Eliminar</button>
           </div>
         </IonButtons>
       </IonToolbar>
     </IonHeader>
 
     <IonContent class="edit-task-content">
-      <form class="edit-task-form" @submit.prevent="saveTask">
+      <form class="edit-task-form" @submit.prevent="handleSaveTask">
         <div class="edit-task-field">
           <label class="edit-task-label" for="task-name">Nombre</label>
           <div class="edit-task-input-wrapper" :class="{ 'edit-task-input-wrapper--error': showTitleError }">

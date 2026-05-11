@@ -31,8 +31,9 @@ A module contains:
 
 * domain
 * application use cases
-* API access
-* state
+* infrastructure
+* dependencies composition
+* reactive state
 * composables
 * UI
 * routes
@@ -57,6 +58,15 @@ Business logic should not depend on:
 * router
 * UI details
 
+Vue should remain mostly isolated inside:
+
+```txt
+views/
+components/
+composables/
+store/
+```
+
 ---
 
 ## 3. Domain first
@@ -66,14 +76,14 @@ Domain objects are pure JavaScript.
 They:
 
 * represent business concepts
-* contain behavior — domain classes should not be anemic
+* contain behavior
+* should not be anemic
 * do not contain Vue reactivity
 * do not know APIs
+* do not know stores
 * do not know UI
 
-Domain classes encapsulate their own rules and return new instances when state changes (immutable updates).
-
-Avoid plain data objects with no behavior for concepts that have real business rules.
+Domain classes encapsulate their own rules and prefer immutable updates.
 
 Example:
 
@@ -127,31 +137,27 @@ Use cases:
 * contain application behavior
 * do not contain Vue logic
 * do not contain UI logic
+* do not know Pinia
 
-Example:
-
-```js
-import { httpTaskRepository } from '../api/httpTaskRepository'
-
-export async function listTasks() {
-  return httpTaskRepository.findAll()
-}
-```
+Use cases should depend on abstractions/repositories, not infrastructure details.
 
 ---
 
-## 5. API layer adapts external data
+## 5. Infrastructure adapts external systems
 
-The API layer is responsible for:
+Infrastructure is responsible for:
 
-* HTTP calls via Axios
+* HTTP calls
+* Axios
+* LocalStorage
+* IndexedDB
+* external APIs
 * DTO mapping
-* adapting external data to domain objects
 
 Structure:
 
 ```txt
-api/
+infrastructure/
   taskApi.js
   httpTaskRepository.js
 ```
@@ -162,85 +168,273 @@ Example responsibilities:
 taskApi.js
 ```
 
-Low-level HTTP communication. Wraps Axios, knows the endpoint URLs.
+Low-level HTTP communication. Knows endpoints and Axios.
 
 ```txt
 httpTaskRepository.js
 ```
 
-Transforms API response DTOs into domain objects. Always returns `Task` instances, never raw API shapes.
+Maps DTOs into domain objects and implements repository contracts.
 
 Example:
 
 ```js
-// httpTaskRepository.js
 import { taskApi } from './taskApi'
 import { Task } from '../domain/Task'
 
-export const httpTaskRepository = {
+export class HttpTaskRepository {
   async findAll() {
     const data = await taskApi.getAll()
 
     return data.map((dto) => new Task(dto))
-  },
+  }
 }
 ```
 
-> When no backend exists yet, replace `httpTaskRepository` with an `inMemoryTaskRepository` or `localStorageTaskRepository` that satisfies the same interface. Use cases remain unchanged.
+> When no backend exists yet, infrastructure can be replaced with:
+>
+> * `inMemoryTaskRepository`
+> * `localStorageTaskRepository`
+>
+> without changing use cases.
 
 ---
 
-## 6. Composables adapt use cases to Vue
+## 6. Dependencies are assembled manually
+
+Dependencies are composed explicitly using manual dependency composition.
+
+Structure:
+
+```txt
+dependencies/
+  createTasksDependencies.js
+```
+
+Example:
+
+```js
+const repository =
+  new HttpTaskRepository(taskApi)
+
+const toggleTaskUseCase =
+  new ToggleTaskUseCase(repository)
+```
+
+The dependencies layer acts as the:
+
+```txt
+Composition Root
+```
+
+of the module.
+
+This keeps:
+
+* infrastructure outside Vue
+* use cases decoupled
+* dependencies explicit
+* testing simple
+
+Avoid complex DI containers unless the application truly needs them.
+
+Frontend applications usually benefit more from:
+
+```txt
+explicit composition
+```
+
+than from:
+
+```txt
+runtime dependency injection magic
+```
+
+---
+
+## 7. Composables adapt business flows to Vue
 
 Composable responsibilities:
 
-* reactivity
+* UI orchestration
+* reactive state adaptation
 * loading states
 * error handling
-* UI orchestration
+* coordinating use cases
+* updating stores
 
 Composable responsibilities DO NOT include:
 
 * business rules
 * persistence logic
-* domain logic
+* HTTP logic
+* DTO mapping
 
-Illustrative example:
+Example:
 
 ```js
-// composables/useTasks.js
-import { ref } from 'vue'
-import { listTasks } from '../application/listTasks'
+import { useTasksStore } from '../store/useTasksStore'
+import { useTasksDependencies } from '../dependencies/createTasksDependencies'
 
-export function useTasks() {
-  const tasks = ref([])
-  const isLoading = ref(false)
-  const error = ref(null)
+export function useTasksViewModel() {
 
-  async function load() {
-    isLoading.value = true
+  const store = useTasksStore()
 
-    try {
-      tasks.value = await listTasks()
-    } catch (e) {
-      error.value = e
-    } finally {
-      isLoading.value = false
-    }
+  const {
+    toggleTaskUseCase,
+  } = useTasksDependencies()
+
+  async function toggleTask(task) {
+
+    const updatedTask =
+      await toggleTaskUseCase.execute(task)
+
+    store.updateTask(updatedTask)
   }
 
   return {
-    tasks,
-    isLoading,
-    error,
-    load,
+    tasks: store.tasks,
+    toggleTask,
   }
+}
+```
+
+Composable/ViewModel is the boundary between:
+
+```txt
+Vue world
+```
+
+and:
+
+```txt
+business/application world
+```
+
+---
+
+## 8. Store responsibility
+
+Stores are reactive application state containers.
+
+Stores belong to:
+
+```txt
+UI/Application reactive layer
+```
+
+not to:
+
+* domain
+* application
+* infrastructure
+
+Pinia is a Vue concern.
+
+Therefore stores should remain isolated from business logic.
+
+---
+
+## 9. What stores SHOULD contain
+
+Stores may contain:
+
+* reactive shared state
+* derived/computed state
+* thin state update operations
+
+Example:
+
+```js
+tasks
+selectedTask
+filters
+pendingTasks
+completedTasks
+```
+
+Store update example:
+
+```js
+function updateTask(updatedTask) {
+  tasks.value = tasks.value.map(task =>
+    task.id === updatedTask.id
+      ? updatedTask
+      : task
+  )
 }
 ```
 
 ---
 
-## 7. State belongs to the module
+## 10. What stores SHOULD NOT contain
+
+Avoid placing inside stores:
+
+* business rules
+* HTTP calls
+* Axios
+* DTO mapping
+* complex orchestration
+* domain invariants
+
+Bad:
+
+```js
+await axios.post(...)
+```
+
+inside store actions.
+
+Bad:
+
+```js
+store.closeMonthlyAccounting()
+```
+
+if it contains real business logic.
+
+---
+
+## 11. Who updates the store?
+
+Composable/ViewModel updates the store.
+
+Correct flow:
+
+```txt
+View
+ ↓
+Composable/ViewModel
+ ↓
+Use Case
+ ↓
+Repository
+ ↓
+Infrastructure/API
+ ↓
+Composable/ViewModel
+ ↓
+Store.update()
+ ↓
+Vue reactive rerender
+```
+
+The store should behave like:
+
+```txt
+reactive application memory
+```
+
+not like:
+
+```txt
+backend service layer
+```
+
+---
+
+## 12. State belongs to the module
 
 Pinia stores live inside their module.
 
@@ -250,7 +444,7 @@ Example:
 features/tasks/store/useTasksStore.js
 ```
 
-Global application setup (router instantiation, Pinia setup) belongs in:
+Global application setup belongs in:
 
 * `main.js`
 * `app/router/index.js`
@@ -259,7 +453,7 @@ No dedicated Pinia bootstrap file is needed.
 
 ---
 
-## 8. Routes are modular
+## 13. Routes are modular
 
 Each module owns its routes.
 
@@ -278,32 +472,20 @@ The global router only aggregates routes.
 ```txt
 src/
   App.vue
-  # Root Vue component
 
   main.js
-  # Application entry point
-  # Bootstraps Vue, Pinia, Router and global styles
 
   app/
-    # Global application setup and composition
-
     router/
       index.js
-      # Creates and exports router instance
-
       routes.js
-      # Aggregates routes from all features
 
   features/
-    # Business modules organized by functional area
 
     tasks/
-      # Tasks module
 
       domain/
         Task.js
-        # Rich domain class
-        # No Vue, no API knowledge
 
       application/
         listTasks.js
@@ -311,37 +493,29 @@ src/
         toggleTask.js
         deleteTask.js
 
-      api/
+      infrastructure/
         taskApi.js
-        # Low-level HTTP communication
-        # Knows endpoints and Axios
-
         httpTaskRepository.js
-        # Maps DTOs to Task domain objects
+
+      dependencies/
+        createTasksDependencies.js
 
       composables/
-        useTasks.js
-        useCreateTask.js
+        useTasksViewModel.js
 
       store/
         useTasksStore.js
 
       router/
         routes.js
-        # Routes owned by this feature
 
       views/
-        # Router-connected pages/screens
-
         TasksView.vue
         NewTaskView.vue
 
       components/
-        # Presentational components of this feature
-
-        TaskList.vue
         TaskItem.vue
-        CompletedPanel.vue
+        TaskSection.vue
         TaskForm.vue
 
       __tests__/
@@ -353,25 +527,18 @@ src/
         components/
 
   shared/
-    # Cross-feature reusable technical/UI code
-    # Must remain business-agnostic
 
     ui/
       AppButton.vue
       AppInput.vue
 
     lib/
-      # Generic utility helpers
-
       date.js
 
     config/
-      # Shared configuration
-
       env.js
 
   design/
-    # Visual system of the application
 
     styles/
       main.css
@@ -395,16 +562,28 @@ src/
 The dependency flow should remain:
 
 ```txt
-UI
+View
  ↓
-Composables
+Composable/ViewModel
  ↓
 Application
  ↓
 Domain
 ```
 
-Technical details remain isolated in the API layer.
+Technical details remain isolated in:
+
+```txt
+infrastructure/
+```
+
+Dependencies are assembled from:
+
+```txt
+dependencies/
+```
+
+Stores remain orthogonal reactive state containers.
 
 ---
 
@@ -444,25 +623,9 @@ task.completed = true
 
 Immutable updates make domain behavior:
 
-* more predictable
-* easier to test
+* predictable
+* testable
 * easier to reason about
-
----
-
-# Store Responsibility
-
-Stores coordinate reactive application state.
-
-Stores should remain thin orchestration/state layers.
-
-Avoid placing:
-
-* business rules
-* HTTP calls
-* DTO mapping
-
-inside stores.
 
 ---
 
@@ -488,8 +651,8 @@ Always start with `use`.
 Examples:
 
 ```txt
-useTasks
-useCreateTask
+useTasksViewModel
+useCreateTaskViewModel
 ```
 
 ---
@@ -502,6 +665,14 @@ useTasksStore
 
 ---
 
+## Dependencies composition
+
+```txt
+createTasksDependencies
+```
+
+---
+
 ## Vue components
 
 Use PascalCase:
@@ -509,7 +680,7 @@ Use PascalCase:
 ```txt
 TaskList.vue
 TaskItem.vue
-CreateTaskForm.vue
+TaskForm.vue
 ```
 
 ---
@@ -548,7 +719,7 @@ stores/
 
 This breaks module cohesion.
 
-Keep everything related to a business feature inside its own `features/<name>/` module.
+Keep everything related to a business feature inside its own module.
 
 ---
 
@@ -562,13 +733,35 @@ onClick => fetch + validate + mutate + business rules
 
 ---
 
-## DO NOT mix API concerns with UI
+## DO NOT mix infrastructure with UI
 
-Components should not:
+Components and composables should not:
 
-* call fetch directly
+* call Axios directly
 * know endpoints
 * transform DTOs
+
+---
+
+## DO NOT turn Pinia into a god service
+
+Avoid:
+
+```txt
+Store → HTTP → business → orchestration → state
+```
+
+Stores should remain:
+
+```txt
+reactive state containers
+```
+
+not:
+
+```txt
+application service layers
+```
 
 ---
 
@@ -586,16 +779,16 @@ The structure should support future additions such as:
 * offline support
 * drag & drop
 
-while keeping the codebase understandable and maintainable.
+while keeping the codebase understandable, testable and maintainable.
 
 ---
 
 # References
 
-* [Feature-Sliced Design](https://feature-sliced.design/?utm_source=chatgpt.com) — Frontend architecture methodology organized by business functionality
-* [Vue Style Guide (Official)](https://vuejs.org/style-guide/?utm_source=chatgpt.com) — Naming, structure and Vue conventions
-* [Pinia Documentation](https://pinia.vuejs.org/core-concepts/?utm_source=chatgpt.com) — Official store patterns and best practices
-* [Vue Router Lazy Loading](https://router.vuejs.org/guide/advanced/lazy-loading.html?utm_source=chatgpt.com) — Route-based code splitting and modular routing
-* [Vitest Documentation](https://vitest.dev/guide/?utm_source=chatgpt.com) — Testing framework for unit and component testing
-* [Cypress Best Practices](https://docs.cypress.io/app/core-concepts/best-practices?utm_source=chatgpt.com) — End-to-end and ATDD testing practices
-* [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2011/11/22/Clean-Architecture.html?utm_source=chatgpt.com) — Foundational architecture principles adapted to frontend development
+* [Feature-Sliced Design](https://feature-sliced.design/?utm_source=chatgpt.com)
+* [Vue Style Guide (Official)](https://vuejs.org/style-guide/?utm_source=chatgpt.com)
+* [Pinia Documentation](https://pinia.vuejs.org/core-concepts/?utm_source=chatgpt.com)
+* [Vue Router Lazy Loading](https://router.vuejs.org/guide/advanced/lazy-loading.html?utm_source=chatgpt.com)
+* [Vitest Documentation](https://vitest.dev/guide/?utm_source=chatgpt.com)
+* [Cypress Best Practices](https://docs.cypress.io/app/core-concepts/best-practices?utm_source=chatgpt.com)
+* [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2011/11/22/Clean-Architecture.html?utm_source=chatgpt.com)
