@@ -28,11 +28,11 @@ describe('createTaskUseCase', () => {
   })
 
   it('should throw when title is empty', () => {
-    expect(() => createTaskUseCase({ title: '' })).toThrow('El ttulo de la tarea no puede estar vaco')
+    expect(() => createTaskUseCase({ title: '' })).toThrow('El título de la tarea no puede estar vacío')
   })
 
   it('should throw when title is only whitespace', () => {
-    expect(() => createTaskUseCase({ title: '   ' })).toThrow('El ttulo de la tarea no puede estar vaco')
+    expect(() => createTaskUseCase({ title: '   ' })).toThrow('El título de la tarea no puede estar vacío')
   })
 
   it('should default description to empty string when not provided', () => {

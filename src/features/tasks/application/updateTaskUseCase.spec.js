@@ -35,10 +35,10 @@ describe('updateTaskUseCase', () => {
   })
 
   it('should throw when updated title is empty', () => {
-    expect(() => updateTaskUseCase(existingTask, { title: '' })).toThrow('El ttulo de la tarea no puede estar vaco')
+    expect(() => updateTaskUseCase(existingTask, { title: '' })).toThrow('El título de la tarea no puede estar vacío')
   })
 
   it('should throw when updated title is only whitespace', () => {
-    expect(() => updateTaskUseCase(existingTask, { title: '   ' })).toThrow('El ttulo de la tarea no puede estar vaco')
+    expect(() => updateTaskUseCase(existingTask, { title: '   ' })).toThrow('El título de la tarea no puede estar vacío')
   })
 })
