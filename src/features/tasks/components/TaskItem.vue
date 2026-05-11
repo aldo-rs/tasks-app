@@ -1,4 +1,6 @@
 <script setup>
+const emit = defineEmits(['toggle'])
+
 defineProps({
   task: {
     type: Object,
@@ -10,9 +12,11 @@ defineProps({
 <template>
   <div class="task-item" :class="{ 'task-item--completed': task.completed }">
     <button
+      type="button"
       class="task-item__toggle"
       :class="{ 'task-item__toggle--completed': task.completed }"
       :aria-label="task.completed ? 'Marcar pendiente' : 'Marcar completada'"
+      @click="emit('toggle', task.id)"
     >
       <span v-if="!task.completed" class="task-item__circle" />
       <span v-else class="task-item__check" aria-hidden="true">

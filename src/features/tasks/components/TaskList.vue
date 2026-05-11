@@ -5,6 +5,7 @@ import { chevronDownOutline } from 'ionicons/icons'
 import TaskItem from './TaskItem.vue'
 
 const isCompletedCollapsed = ref(false)
+const emit = defineEmits(['toggle-task'])
 
 defineProps({
   pendingTasks: {
@@ -23,7 +24,7 @@ defineProps({
     <!-- Pending tasks -->
     <ul v-if="pendingTasks.length > 0" class="task-list__group">
       <li v-for="task in pendingTasks" :key="task.id">
-        <TaskItem :task="task" />
+        <TaskItem :task="task" @toggle="emit('toggle-task', $event)" />
       </li>
     </ul>
 
@@ -49,7 +50,7 @@ defineProps({
       class="task-list__group task-list__group--completed"
     >
       <li v-for="task in completedTasks" :key="task.id">
-        <TaskItem :task="task" />
+        <TaskItem :task="task" @toggle="emit('toggle-task', $event)" />
       </li>
     </ul>
 
