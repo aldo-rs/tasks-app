@@ -31,14 +31,15 @@ defineProps({
   align-items: center;
   gap: var(--space-md);
   background-color: var(--color-bg);
+  border: 1px solid #CDCDCD;
   border-radius: var(--radius-lg);
   padding: var(--space-md);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  transition: opacity 0.2s;
+  transition: background-color 0.2s;
 }
 
 .task-item--completed {
-  opacity: 0.6;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
 }
 
 .task-item__toggle {
@@ -55,7 +56,7 @@ defineProps({
   width: 28px;
   height: 28px;
   border-radius: var(--radius-full);
-  border: 2px solid var(--color-bg-secondary);
+  border: 2px solid #7E7E7E;
   color: var(--color-primary);
   transition: border-color 0.2s;
 }
@@ -76,8 +77,9 @@ defineProps({
 }
 
 .task-item__title {
-  font-size: 0.9375rem;
-  font-weight: var(--font-weight-label);
+  font-family: var(--font-family);
+  font-size: 17px;
+  font-weight: 500;
   color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
@@ -90,8 +92,10 @@ defineProps({
 }
 
 .task-item__description {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 300;
+  color: #212121;
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;

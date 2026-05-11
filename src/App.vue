@@ -1,7 +1,9 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { IonApp, IonRouterOutlet } from '@ionic/vue'
 </script>
 
 <template>
-  <RouterView />
+  <IonApp>
+    <IonRouterOutlet />
+  </IonApp>
 </template>

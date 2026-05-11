@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from '@ionic/vue-router'
 import { tasksRoutes } from '@/features/tasks/router/routes.js'
 
 const router = createRouter({

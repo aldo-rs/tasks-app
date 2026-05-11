@@ -1,8 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { Task } from '@/features/tasks/domain/Task.js'
 
 export const useTasksStore = defineStore('tasks', () => {
-  const tasks = ref([])
+  const tasks = ref([
+    new Task({
+      id: '1',
+      title: 'Buy milk',
+      description: 'Milk for my hijas',
+      completed: false,
+    }),
+  ])
 
   const pendingTasks = computed(() => tasks.value.filter((t) => !t.completed))
   const completedTasks = computed(() => tasks.value.filter((t) => t.completed))

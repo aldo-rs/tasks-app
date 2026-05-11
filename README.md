@@ -25,6 +25,19 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
+## Ionic support
+
+The project now includes basic Ionic Vue support for mobile-first UI primitives:
+
+- Added dependencies: `@ionic/vue`, `@ionic/vue-router`, `ionicons`.
+- Ionic is registered in `src/main.js` (Pinia stays as-is).
+- Ionic base CSS is loaded globally (core, normalize, structure, typography + utility helpers).
+- App shell uses `IonApp` + `IonRouterOutlet` in `src/App.vue`.
+- Router creation uses Ionic router helpers in `src/app/router/index.js`.
+- Tasks page now uses Ionic layout components (`IonPage`, `IonHeader`, `IonContent`, `IonFab`, etc.).
+
+You can start using Ionic components incrementally by importing only what each view/component needs.
+
 ### Compile and Hot-Reload for Development
 
 ```sh

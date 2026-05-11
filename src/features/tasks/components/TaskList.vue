@@ -1,4 +1,6 @@
 <script setup>
+import TaskItem from './TaskItem.vue'
+
 defineProps({
   pendingTasks: {
     type: Array,
@@ -14,14 +16,21 @@ defineProps({
 <template>
   <div class="task-list">
     <!-- Pending tasks -->
-    <ul v-if="pendingTasks.length > 0">
+    <ul v-if="pendingTasks.length > 0" class="task-list__group">
       <li v-for="task in pendingTasks" :key="task.id">
         <TaskItem :task="task" />
       </li>
     </ul>
 
+    <!-- Completed tasks -->
+    <ul v-if="completedTasks.length > 0" class="task-list__group task-list__group--completed">
+      <li v-for="task in completedTasks" :key="task.id">
+        <TaskItem :task="task" />
+      </li>
+    </ul>
+
     <!-- Empty state -->
-    <div v-else class="task-list__empty">
+    <div v-if="pendingTasks.length === 0 && completedTasks.length === 0" class="task-list__empty">
       <p class="task-list__empty-text">No tienes tareas pendientes</p>
       <p class="task-list__empty-hint">Pulsa + para añadir tu primera tarea</p>
     </div>
@@ -32,7 +41,20 @@ defineProps({
 .task-list {
   display: flex;
   flex-direction: column;
+  gap: var(--space-md);
+}
+
+.task-list__group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
+}
+
+.task-list__group--completed {
+  margin-top: var(--space-xs);
 }
 
 .task-list__empty {
