@@ -166,7 +166,7 @@ function deleteCurrentTask() {
               :rows="4"
             />
           </div>
-          <p class="edit-task-hint">Máximo 100 caracteres</p>
+          <p class="edit-task-hint">{{ description.length }}/100 caracteres</p>
         </div>
 
         <IonButton class="edit-task-submit" type="submit" expand="block" :disabled="!isFormValid">
