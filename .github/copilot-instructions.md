@@ -1,5 +1,6 @@
 # Copilot Instructions
 
+
 ## Project context
 
 This repository is a learning-oriented frontend POC for a simple tasks-app.
