@@ -5,9 +5,9 @@ describe('deleteTaskUseCase', () => {
     expect(deleteTaskUseCase('1')).toBe('1')
   })
   it('should throw when id is empty', () => {
-    expect(() => deleteTaskUseCase('')).toThrow()
+    expect(() => deleteTaskUseCase('')).toThrow('Se requiere un id para eliminar la tarea')
   })
   it('should throw when id is undefined', () => {
-    expect(() => deleteTaskUseCase(undefined)).toThrow()
+    expect(() => deleteTaskUseCase(undefined)).toThrow('Se requiere un id para eliminar la tarea')
   })
 })

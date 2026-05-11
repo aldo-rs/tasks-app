@@ -41,5 +41,14 @@ export default defineConfig([
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
+  // Ionic uses the native Web Components `slot` attribute as its public API.
+  // The vue/no-deprecated-slot-attribute rule produces false positives for Ionic components.
+  {
+    files: ['src/**/*.vue'],
+    rules: {
+      'vue/no-deprecated-slot-attribute': 'off',
+    },
+  },
+
   skipFormatting,
 ])
