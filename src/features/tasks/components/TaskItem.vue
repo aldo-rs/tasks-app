@@ -45,7 +45,7 @@ defineProps({
 <style scoped>
 .task-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-md);
   background-color: var(--color-bg);
   border: 1px solid #cdcdcd;
@@ -63,6 +63,7 @@ defineProps({
   flex-shrink: 0;
   width: 28px;
   height: 28px;
+  margin-top: 0;
   padding: 0;
   border: none;
   background: transparent;
