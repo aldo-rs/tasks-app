@@ -38,5 +38,22 @@ describe('TaskList', () => {
 
     expect(wrapper.emitted('toggle-task')).toEqual([['2']])
   })
+
+  it('should show done state when there are no pending tasks and completed tasks exist', () => {
+    const wrapper = mount(TaskList, {
+      props: {
+        pendingTasks: [],
+        completedTasks: [{ id: '2', title: 'Read book', description: '', completed: true }],
+      },
+      global: {
+        stubs: {
+          IonIcon: true,
+        },
+      },
+    })
+
+    expect(wrapper.text()).toContain('Todas las tareas completas')
+    expect(wrapper.text()).toContain('¡Buen Trabajo!')
+  })
 })
 

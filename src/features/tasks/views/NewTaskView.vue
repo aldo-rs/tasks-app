@@ -71,7 +71,9 @@ const { title, description, isFormValid, submit } = useCreateTask()
 </template>
 
 <style scoped>
-.new-task-header {
+.new-task-header,
+.new-task-toolbar {
+  border: 0;
   box-shadow: none;
 }
 
@@ -79,7 +81,22 @@ const { title, description, isFormValid, submit } = useCreateTask()
   --background: var(--color-bg);
   --min-height: 72px;
   --border-width: 0;
+  --border-color: transparent;
   --box-shadow: none;
+}
+
+/* Ionic can draw the divider with pseudo-elements (mode-specific). */
+.new-task-header::after,
+.new-task-toolbar::after,
+:deep(ion-header.new-task-header.header-ios)::after,
+:deep(ion-header.new-task-header.header-md)::after,
+:deep(ion-toolbar.new-task-toolbar.toolbar-ios)::after,
+:deep(ion-toolbar.new-task-toolbar.toolbar-md)::after {
+  display: none !important;
+  height: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .new-task-title {

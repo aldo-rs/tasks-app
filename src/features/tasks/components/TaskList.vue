@@ -1,4 +1,4 @@
-<script setup>
+<script setup xmlns="http://www.w3.org/1999/html">
 import { ref } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { chevronDownOutline } from 'ionicons/icons'
@@ -27,6 +27,16 @@ defineProps({
         <TaskItem :task="task" @toggle="emit('toggle-task', $event)" />
       </li>
     </ul>
+
+    <!-- All done state -->
+    <div v-if="pendingTasks.length === 0 && completedTasks.length > 0" class="task-list__done">
+      <p class="task-list__done-title">
+        <span>Todas las tareas</span>
+        <br />
+        <span>completadas 🎉</span>
+      </p>
+      <p class="task-list__done-subtitle">¡Buen Trabajo!</p>
+    </div>
 
     <!-- Completed tasks -->
     <button
@@ -57,6 +67,7 @@ defineProps({
     <!-- Empty state -->
     <div v-if="pendingTasks.length === 0 && completedTasks.length === 0" class="task-list__empty">
       <p class="task-list__empty-text">No tienes tareas pendientes</p>
+
       <p class="task-list__empty-hint">Pulsa + para añadir tu primera tarea</p>
     </div>
   </div>
@@ -92,8 +103,8 @@ defineProps({
   border: none;
   background: transparent;
   font-family: 'Poppins', var(--font-family);
-  font-size: 0.95rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   color: #1a1a1a;
 }
 
@@ -121,7 +132,7 @@ defineProps({
 }
 
 .task-list__empty-text {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: var(--font-weight-label);
   color: var(--color-text);
 }
@@ -129,5 +140,28 @@ defineProps({
 .task-list__empty-hint {
   font-size: 0.875rem;
   color: var(--color-text-muted);
+}
+
+.task-list__done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  text-align: center;
+  margin-top: var(--space-sm);
+  margin-bottom: 12px;
+}
+
+.task-list__done-title {
+  font-size: 1.3rem;
+  font-weight: var(--font-weight-label);
+  color: var(--color-text);
+}
+
+.task-list__done-subtitle {
+  padding-top: 5px;
+  font-size: 1rem;
+  color: var(--color-text);
 }
 </style>
