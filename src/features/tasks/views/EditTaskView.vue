@@ -11,12 +11,15 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  alertController,
+  toastController,
 } from '@ionic/vue'
-import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ellipsisVertical } from 'ionicons/icons'
 import { Task } from '../domain/Task.js'
 import { useTasksStore } from '../store/useTasksStore.js'
+import { clearFocus } from '@/shared/utils/clearFocus.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -28,25 +31,24 @@ const isMenuOpen = ref(false)
 const menuContainerRef = ref(null)
 
 const taskId = computed(() => String(route.params.id ?? ''))
-const isFormValid = computed(() => title.value.trim().length > 0)
+// Derived from Task.isValid() so validation logic stays in the domain.
+const isFormValid = computed(() => new Task({ id: '', title: title.value }).isValid())
+const showTitleError = computed(() => title.value.length > 0 && !isFormValid.value)
 
-watchEffect(() => {
-  const task = store.getTaskById(taskId.value)
-
-  if (!task) {
-    router.replace('/')
-    return
-  }
-
-  title.value = task.title
-  description.value = task.description
-})
-
-function clearFocus() {
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur()
-  }
-}
+// Watch taskId immediately so it also handles forward navigations to a different task.
+watch(
+  taskId,
+  (id) => {
+    const task = store.getTaskById(id)
+    if (!task) {
+      router.replace({ name: 'tasks.list' })
+      return
+    }
+    title.value = task.title
+    description.value = task.description
+  },
+  { immediate: true },
+)
 
 function closeMenu() {
   isMenuOpen.value = false
@@ -82,7 +84,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', handleOutsideInteraction, true)
 })
 
-function saveTask() {
+async function saveTask() {
   if (!isFormValid.value) return
 
   const currentTask = store.getTaskById(taskId.value)
@@ -98,14 +100,46 @@ function saveTask() {
   closeMenu()
   clearFocus()
   store.updateTask(updatedTask)
-  router.push('/')
+
+  const toast = await toastController.create({
+    message: 'Tarea guardada',
+    duration: 2000,
+    position: 'bottom',
+  })
+  toast.present()
+
+  router.push({ name: 'tasks.list' })
 }
 
-function deleteCurrentTask() {
+async function deleteCurrentTask() {
   closeMenu()
-  clearFocus()
-  store.deleteTask(taskId.value)
-  router.push('/')
+
+  const alert = await alertController.create({
+    header: 'Eliminar tarea',
+    message: '¿Estás seguro de que quieres eliminar esta tarea?',
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Eliminar',
+        role: 'destructive',
+        handler: async () => {
+          clearFocus()
+          store.deleteTask(taskId.value)
+
+          const toast = await toastController.create({
+            message: 'Tarea eliminada',
+            duration: 2000,
+            position: 'bottom',
+          })
+          toast.present()
+
+          router.push({ name: 'tasks.list' })
+        },
+      },
+    ],
+  })
+
+  await alert.present()
 }
 </script>
 
@@ -142,7 +176,7 @@ function deleteCurrentTask() {
       <form class="edit-task-form" @submit.prevent="saveTask">
         <div class="edit-task-field">
           <label class="edit-task-label" for="task-name">Nombre</label>
-          <div class="edit-task-input-wrapper">
+          <div class="edit-task-input-wrapper" :class="{ 'edit-task-input-wrapper--error': showTitleError }">
             <IonInput
               id="task-name"
               v-model="title"
@@ -152,6 +186,7 @@ function deleteCurrentTask() {
               autocomplete="off"
             />
           </div>
+          <p v-if="showTitleError" class="edit-task-error">El nombre no puede estar vacío</p>
         </div>
 
         <div class="edit-task-field">
@@ -241,6 +276,15 @@ function deleteCurrentTask() {
   --color: var(--color-text);
 }
 
+/* Small per-mode tweak so title appears visually centered in iOS and MD */
+:global(.ios) .edit-task-title {
+  transform: translateX(-2px);
+}
+
+:global(.md) .edit-task-title {
+  transform: translateX(-1px);
+}
+
 .edit-task-content {
   --background: var(--color-bg);
   --padding-top: var(--space-lg);
@@ -269,7 +313,7 @@ function deleteCurrentTask() {
 }
 
 .edit-task-input-wrapper {
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;
@@ -277,6 +321,10 @@ function deleteCurrentTask() {
 
 .edit-task-input-wrapper:focus-within {
   border-color: var(--color-primary);
+}
+
+.edit-task-input-wrapper--error {
+  border-color: var(--color-error);
 }
 
 .edit-task-input,
@@ -293,6 +341,13 @@ function deleteCurrentTask() {
   --padding-bottom: 14px;
   font-family: var(--font-family);
   font-size: 0.95rem;
+}
+
+.edit-task-error {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  color: var(--color-error);
 }
 
 .edit-task-hint {
@@ -327,7 +382,7 @@ function deleteCurrentTask() {
   min-width: 140px;
   padding: var(--space-xs);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   background: var(--color-bg);
   box-shadow: none;
   z-index: 20;

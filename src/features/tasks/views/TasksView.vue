@@ -16,14 +16,6 @@ import TaskList from '../components/TaskList.vue'
 
 const router = useRouter()
 const store = useTasksStore()
-
-function handleToggleTask(taskId) {
-  store.toggleTask(taskId)
-}
-
-function handleEditTask(taskId) {
-  router.push(`/tasks/${taskId}/edit`)
-}
 </script>
 
 <template>
@@ -38,15 +30,15 @@ function handleEditTask(taskId) {
       <TaskList
         :pending-tasks="store.pendingTasks"
         :completed-tasks="store.completedTasks"
-        @toggle-task="handleToggleTask"
-        @edit-task="handleEditTask"
+        @toggle-task="store.toggleTask"
+        @edit-task="(id) => router.push({ name: 'tasks.edit', params: { id } })"
       />
 
       <IonFab slot="fixed" vertical="bottom" horizontal="end">
         <IonFabButton
           color="pdm-primary"
           aria-label="Añadir tarea"
-          @click="router.push('/tasks/new')"
+          @click="router.push({ name: 'tasks.new' })"
         >
           <IonIcon :icon="add" />
         </IonFabButton>

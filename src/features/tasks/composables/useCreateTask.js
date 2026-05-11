@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Task } from '../domain/Task.js'
 import { useTasksStore } from '../store/useTasksStore.js'
+import { clearFocus } from '@/shared/utils/clearFocus.js'
 
 export function useCreateTask() {
   const router = useRouter()
@@ -17,12 +18,6 @@ export function useCreateTask() {
     description.value = ''
   }
 
-  function clearFocus() {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur()
-    }
-  }
-
   function submit() {
     if (!isFormValid.value) return
 
@@ -35,7 +30,7 @@ export function useCreateTask() {
     store.addTask(task)
     resetForm()
     clearFocus()
-    router.push('/')
+    router.push({ name: 'tasks.list' })
   }
 
   return { title, description, isFormValid, resetForm, submit }

@@ -1,4 +1,4 @@
-<script setup xmlns="http://www.w3.org/1999/html">
+<script setup>
 import { ref } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { chevronDownOutline } from 'ionicons/icons'
@@ -113,7 +113,7 @@ defineProps({
   font-family: 'Poppins', var(--font-family);
   font-size: 1rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .task-list__completed-header--with-pending {

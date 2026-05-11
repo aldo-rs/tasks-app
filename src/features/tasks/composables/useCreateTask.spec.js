@@ -57,7 +57,7 @@ describe('useCreateTask', () => {
     title.value = 'Buy milk'
     submit()
 
-    expect(mockPush).toHaveBeenCalledWith('/')
+    expect(mockPush).toHaveBeenCalledWith({ name: 'tasks.list' })
   })
 })
 

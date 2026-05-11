@@ -48,22 +48,22 @@ defineProps({
   align-items: flex-start;
   gap: var(--space-md);
   background-color: var(--color-bg);
-  border: 1px solid #cdcdcd;
+  border: 1px solid var(--color-border-muted);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: background-color 0.2s;
 }
 
 .task-item--completed {
-  background-color: #f8f9fa;
-  border-color: #e0e0e0;
+  background-color: var(--color-bg-soft);
+  border-color: var(--color-border);
 }
 
 .task-item__toggle {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  margin-top: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
   padding: 0;
   border: none;
   background: transparent;
@@ -81,8 +81,8 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border-radius: var(--radius-full);
   border: 2px solid #7e7e7e;
   color: var(--color-primary);
@@ -125,14 +125,14 @@ defineProps({
 
 .task-item--completed .task-item__title {
   text-decoration: line-through;
-  color: #565555;
+  color: var(--color-text-completed);
 }
 
 .task-item__description {
   font-family: var(--font-family);
   font-size: 12px;
   font-weight: 300;
-  color: #212121;
+  color: var(--color-text);
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -140,6 +140,6 @@ defineProps({
 }
 
 .task-item--completed .task-item__description {
-  color: #565555;
+  color: var(--color-text-completed);
 }
 </style>

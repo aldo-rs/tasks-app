@@ -29,7 +29,6 @@ onIonViewWillEnter(() => {
           <IonBackButton default-href="/" text="" class="new-task-back-button" />
         </IonButtons>
         <IonTitle class="new-task-title">Nueva Tarea</IonTitle>
-        <IonButtons slot="end" class="new-task-toolbar-side" />
       </IonToolbar>
     </IonHeader>
 
@@ -166,7 +165,7 @@ onIonViewWillEnter(() => {
 }
 
 .new-task-input-wrapper {
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;

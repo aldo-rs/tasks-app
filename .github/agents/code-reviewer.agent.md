@@ -17,6 +17,8 @@ and use as additional context when available:
 - docs/AI/frontend-architecture.md
 - docs/AI/frontend-decisions.md
 - docs/AI/frontend-glossary.md
+- docs/arch/arch-conventions.md
+- docs/arch/arch-rules.md
 
 ## Mission
 
