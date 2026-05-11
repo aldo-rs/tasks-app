@@ -1,5 +1,5 @@
 <script setup>
-const emit = defineEmits(['toggle'])
+const emit = defineEmits(['toggle', 'edit'])
 
 defineProps({
   task: {
@@ -35,10 +35,10 @@ defineProps({
       </span>
     </button>
 
-    <div class="task-item__content">
+    <button type="button" class="task-item__content" @click="emit('edit', task.id)">
       <p class="task-item__title">{{ task.title }}</p>
       <p v-if="task.description" class="task-item__description">{{ task.description }}</p>
-    </div>
+    </button>
   </div>
 </template>
 
@@ -105,6 +105,11 @@ defineProps({
 .task-item__content {
   flex: 1;
   min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
 }
 
 .task-item__title {

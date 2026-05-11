@@ -12,6 +12,17 @@ export function useCreateTask() {
 
   const isFormValid = computed(() => title.value.trim().length > 0)
 
+  function resetForm() {
+    title.value = ''
+    description.value = ''
+  }
+
+  function clearFocus() {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+  }
+
   function submit() {
     if (!isFormValid.value) return
 
@@ -22,9 +33,10 @@ export function useCreateTask() {
     })
 
     store.addTask(task)
+    resetForm()
+    clearFocus()
     router.push('/')
   }
 
-  return { title, description, isFormValid, submit }
+  return { title, description, isFormValid, resetForm, submit }
 }
-

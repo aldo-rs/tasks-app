@@ -10,10 +10,15 @@ import {
   IonInput,
   IonTextarea,
   IonButton,
+  onIonViewWillEnter,
 } from '@ionic/vue'
 import { useCreateTask } from '../composables/useCreateTask.js'
 
-const { title, description, isFormValid, submit } = useCreateTask()
+const { title, description, isFormValid, resetForm, submit } = useCreateTask()
+
+onIonViewWillEnter(() => {
+  resetForm()
+})
 </script>
 
 <template>
@@ -24,7 +29,7 @@ const { title, description, isFormValid, submit } = useCreateTask()
           <IonBackButton default-href="/" text="" class="new-task-back-button" />
         </IonButtons>
         <IonTitle class="new-task-title">Nueva Tarea</IonTitle>
-        <IonButtons slot="end" class="new-task-toolbar-side" aria-hidden="true" />
+        <IonButtons slot="end" class="new-task-toolbar-side" />
       </IonToolbar>
     </IonHeader>
 
@@ -212,7 +217,7 @@ const { title, description, isFormValid, submit } = useCreateTask()
   --background-activated: var(--color-primary-hover);
   --background-disabled: var(--color-primary-disabled);
   --color: #ffffff;
-  --border-radius: 20px;
+  --border-radius: 30px;
   --box-shadow: none;
   font-family: var(--font-family);
   font-size: 0.95rem;
@@ -221,7 +226,9 @@ const { title, description, isFormValid, submit } = useCreateTask()
   text-transform: none;
   margin-top: var(--space-sm);
 }
+
+.new-task-submit::part(native) {
+  border-radius: 30px;
+}
 </style>
-
-
 

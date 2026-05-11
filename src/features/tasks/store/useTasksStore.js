@@ -19,9 +19,29 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  function getTaskById(id) {
+    return tasks.value.find((t) => t.id === id)
+  }
+
+  function updateTask(updatedTask) {
+    const index = tasks.value.findIndex((t) => t.id === updatedTask.id)
+    if (index !== -1) {
+      tasks.value[index] = new Task(updatedTask)
+    }
+  }
+
   function deleteTask(id) {
     tasks.value = tasks.value.filter((t) => t.id !== id)
   }
 
-  return { tasks, pendingTasks, completedTasks, addTask, toggleTask, deleteTask }
+  return {
+    tasks,
+    pendingTasks,
+    completedTasks,
+    addTask,
+    toggleTask,
+    getTaskById,
+    updateTask,
+    deleteTask,
+  }
 })

@@ -39,6 +39,25 @@ describe('TaskList', () => {
     expect(wrapper.emitted('toggle-task')).toEqual([['2']])
   })
 
+  it('should emit edit-task when clicking task content', async () => {
+    const wrapper = mount(TaskList, {
+      props: {
+        pendingTasks: [{ id: '1', title: 'Buy milk', description: 'Whole milk', completed: false }],
+        completedTasks: [],
+      },
+      global: {
+        stubs: {
+          IonIcon: true,
+        },
+      },
+    })
+
+    await wrapper.get('.task-item__content').trigger('click')
+
+    expect(wrapper.emitted('edit-task')).toEqual([['1']])
+    expect(wrapper.emitted('toggle-task')).toBeUndefined()
+  })
+
   it('should show done state when there are no pending tasks and completed tasks exist', () => {
     const wrapper = mount(TaskList, {
       props: {
@@ -52,7 +71,8 @@ describe('TaskList', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('Todas las tareas completas')
+    expect(wrapper.text()).toContain('Todas las tareas')
+    expect(wrapper.text()).toContain('completadas 🎉')
     expect(wrapper.text()).toContain('¡Buen Trabajo!')
   })
 })

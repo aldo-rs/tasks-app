@@ -7,4 +7,8 @@ export const tasksRoutes = [
     path: '/tasks/new',
     component: () => import('../views/NewTaskView.vue'),
   },
+  {
+    path: '/tasks/:id/edit',
+    component: () => import('../views/EditTaskView.vue'),
+  },
 ]
