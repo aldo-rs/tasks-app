@@ -29,15 +29,12 @@ features/tasks
 
 A module contains:
 
-* domain
-* application use cases
-* infrastructure
-* dependencies composition
-* reactive state
-* composables
-* UI
+* business model
+* business services/use cases
+* API/infrastructure access
+* dependency composition
+* presentation layer
 * routes
-* tests
 
 The module is the main unit of cohesion.
 
@@ -58,18 +55,52 @@ Business logic should not depend on:
 * router
 * UI details
 
-Vue should remain mostly isolated inside:
+Vue should remain isolated inside:
 
 ```txt
-views/
-components/
-composables/
-store/
+presentation/
 ```
 
 ---
 
-## 3. Domain first
+## 3. Presentation layer
+
+The presentation layer contains everything related to Vue/Ionic and user interaction.
+
+Structure:
+
+```txt
+presentation/
+  views/
+  components/
+  composables/
+  store/
+```
+
+Responsibilities include:
+
+* rendering
+* reactive orchestration
+* state synchronization
+* user interaction
+* screen state
+* component composition
+
+This layer acts as the boundary between:
+
+```txt
+Vue world
+```
+
+and:
+
+```txt
+business world
+```
+
+---
+
+## 4. Domain first
 
 Domain objects are pure JavaScript.
 
@@ -113,12 +144,12 @@ export class Task {
 
 ---
 
-## 4. Use cases orchestrate business operations
+## 5. Services orchestrate business operations
 
-Use cases live in:
+Services live in:
 
 ```txt
-application/
+services/
 ```
 
 Examples:
@@ -130,7 +161,7 @@ toggleTask.js
 deleteTask.js
 ```
 
-Use cases:
+Services:
 
 * coordinate business flow
 * use repositories
@@ -139,13 +170,13 @@ Use cases:
 * do not contain UI logic
 * do not know Pinia
 
-Use cases should depend on abstractions/repositories, not infrastructure details.
+Services should depend on abstractions/repositories, not infrastructure details.
 
 ---
 
-## 5. Infrastructure adapts external systems
+## 6. API layer adapts external systems
 
-Infrastructure is responsible for:
+API layer responsibilities:
 
 * HTTP calls
 * Axios
@@ -157,7 +188,7 @@ Infrastructure is responsible for:
 Structure:
 
 ```txt
-infrastructure/
+api/
   taskApi.js
   httpTaskRepository.js
 ```
@@ -180,7 +211,7 @@ Example:
 
 ```js
 import { taskApi } from './taskApi'
-import { Task } from '../domain/Task'
+import { Task } from '../model/Task'
 
 export class HttpTaskRepository {
   async findAll() {
@@ -191,16 +222,16 @@ export class HttpTaskRepository {
 }
 ```
 
-> When no backend exists yet, infrastructure can be replaced with:
+> When no backend exists yet, API implementations can be replaced with:
 >
 > * `inMemoryTaskRepository`
 > * `localStorageTaskRepository`
 >
-> without changing use cases.
+> without changing services.
 
 ---
 
-## 6. Dependencies are assembled manually
+## 7. Dependencies are assembled manually
 
 Dependencies are composed explicitly using manual dependency composition.
 
@@ -217,8 +248,8 @@ Example:
 const repository =
   new HttpTaskRepository(taskApi)
 
-const toggleTaskUseCase =
-  new ToggleTaskUseCase(repository)
+const toggleTaskService =
+  new ToggleTaskService(repository)
 ```
 
 The dependencies layer acts as the:
@@ -232,7 +263,7 @@ of the module.
 This keeps:
 
 * infrastructure outside Vue
-* use cases decoupled
+* services decoupled
 * dependencies explicit
 * testing simple
 
@@ -252,7 +283,7 @@ runtime dependency injection magic
 
 ---
 
-## 7. Composables adapt business flows to Vue
+## 8. Composables adapt business flows to Vue
 
 Composable responsibilities:
 
@@ -260,7 +291,7 @@ Composable responsibilities:
 * reactive state adaptation
 * loading states
 * error handling
-* coordinating use cases
+* coordinating services
 * updating stores
 
 Composable responsibilities DO NOT include:
@@ -281,13 +312,13 @@ export function useTasksViewModel() {
   const store = useTasksStore()
 
   const {
-    toggleTaskUseCase,
+    toggleTaskService,
   } = useTasksDependencies()
 
   async function toggleTask(task) {
 
     const updatedTask =
-      await toggleTaskUseCase.execute(task)
+      await toggleTaskService.execute(task)
 
     store.updateTask(updatedTask)
   }
@@ -308,26 +339,26 @@ Vue world
 and:
 
 ```txt
-business/application world
+business world
 ```
 
 ---
 
-## 8. Store responsibility
+## 9. Store responsibility
 
 Stores are reactive application state containers.
 
 Stores belong to:
 
 ```txt
-UI/Application reactive layer
+presentation layer
 ```
 
 not to:
 
-* domain
-* application
-* infrastructure
+* model
+* services
+* api
 
 Pinia is a Vue concern.
 
@@ -335,7 +366,7 @@ Therefore stores should remain isolated from business logic.
 
 ---
 
-## 9. What stores SHOULD contain
+## 10. What stores SHOULD contain
 
 Stores may contain:
 
@@ -367,7 +398,7 @@ function updateTask(updatedTask) {
 
 ---
 
-## 10. What stores SHOULD NOT contain
+## 11. What stores SHOULD NOT contain
 
 Avoid placing inside stores:
 
@@ -396,7 +427,7 @@ if it contains real business logic.
 
 ---
 
-## 11. Who updates the store?
+## 12. Who updates the store?
 
 Composable/ViewModel updates the store.
 
@@ -407,11 +438,11 @@ View
  ↓
 Composable/ViewModel
  ↓
-Use Case
+Service
  ↓
 Repository
  ↓
-Infrastructure/API
+API
  ↓
 Composable/ViewModel
  ↓
@@ -434,14 +465,14 @@ backend service layer
 
 ---
 
-## 12. State belongs to the module
+## 13. State belongs to the module
 
 Pinia stores live inside their module.
 
 Example:
 
 ```txt
-features/tasks/store/useTasksStore.js
+features/tasks/presentation/store/useTasksStore.js
 ```
 
 Global application setup belongs in:
@@ -453,14 +484,14 @@ No dedicated Pinia bootstrap file is needed.
 
 ---
 
-## 13. Routes are modular
+## 14. Routes are modular
 
 Each module owns its routes.
 
 Example:
 
 ```txt
-features/tasks/router/routes.js
+features/tasks/routes.js
 ```
 
 The global router only aggregates routes.
@@ -484,53 +515,51 @@ src/
 
     tasks/
 
-      domain/
+      model/
         Task.js
 
-      application/
+      services/
         listTasks.js
         createTask.js
         toggleTask.js
         deleteTask.js
 
-      infrastructure/
+      api/
         taskApi.js
         httpTaskRepository.js
 
       dependencies/
         createTasksDependencies.js
 
-      composables/
-        useTasksViewModel.js
+      presentation/
 
-      store/
-        useTasksStore.js
-
-      router/
-        routes.js
-
-      views/
-        TasksView.vue
-        NewTaskView.vue
-
-      components/
-        TaskItem.vue
-        TaskSection.vue
-        TaskForm.vue
-
-      __tests__/
-        domain/
-        application/
-        composables/
-        store/
         views/
+          TasksView.vue
+          NewTaskView.vue
+
         components/
+          TaskItem.vue
+          TaskSection.vue
+          TaskForm.vue
+
+        composables/
+          useTasksViewModel.js
+
+        store/
+          useTasksStore.js
+
+      routes.js
+      index.js
 
   shared/
 
-    ui/
+    components/
       AppButton.vue
       AppInput.vue
+
+    composables/
+
+    services/
 
     lib/
       date.js
@@ -557,6 +586,65 @@ src/
 
 ---
 
+# Testing Philosophy
+
+Test behavior, not implementation.
+
+Preferred testing focus:
+
+* domain behavior
+* service behavior
+* composable behavior
+* UI interactions
+
+Avoid:
+
+* testing framework internals
+* testing private implementation details
+* tightly coupling tests to component structure
+
+---
+
+# Test Location Convention
+
+Unit tests should live close to the implementation they validate.
+
+Good:
+
+```txt
+Task.js
+Task.test.js
+```
+
+Good:
+
+```txt
+useTasksViewModel.js
+useTasksViewModel.test.js
+```
+
+Good:
+
+```txt
+TaskItem.vue
+TaskItem.test.js
+```
+
+Avoid centralized test folders like:
+
+```txt
+__tests__/
+```
+
+Keeping tests near their implementation improves:
+
+* discoverability
+* maintainability
+* refactoring safety
+* module cohesion
+
+---
+
 # Dependency Direction
 
 The dependency flow should remain:
@@ -566,15 +654,15 @@ View
  ↓
 Composable/ViewModel
  ↓
-Application
+Service
  ↓
-Domain
+Model
 ```
 
 Technical details remain isolated in:
 
 ```txt
-infrastructure/
+api/
 ```
 
 Dependencies are assembled from:
@@ -594,13 +682,13 @@ Prefer absolute imports using the `@` alias.
 Good:
 
 ```js
-import { Task } from '@/features/tasks/domain/Task'
+import { Task } from '@/features/tasks/model/Task'
 ```
 
 Avoid:
 
 ```js
-import { Task } from '../../../domain/Task'
+import { Task } from '../../../model/Task'
 ```
 
 ---
@@ -631,7 +719,7 @@ Immutable updates make domain behavior:
 
 # Naming Conventions
 
-## Use cases
+## Services
 
 Use verbs:
 
@@ -685,25 +773,6 @@ TaskForm.vue
 
 ---
 
-# Testing Philosophy
-
-Test behavior, not implementation.
-
-Preferred testing focus:
-
-* domain behavior
-* use case behavior
-* composable behavior
-* UI interactions
-
-Avoid:
-
-* testing framework internals
-* testing private implementation details
-* tightly coupling tests to component structure
-
----
-
 # Anti-Patterns To Avoid
 
 ## DO NOT organize globally by technical type
@@ -733,7 +802,7 @@ onClick => fetch + validate + mutate + business rules
 
 ---
 
-## DO NOT mix infrastructure with UI
+## DO NOT mix API/infrastructure with presentation
 
 Components and composables should not:
 
@@ -785,7 +854,7 @@ while keeping the codebase understandable, testable and maintainable.
 
 # References
 
-* [Feature-Sliced Design](https://feature-sliced.design/?utm_source=chatgpt.com)
+* [Feature-Sliced Design](https://feature-sliced.design?utm_source=chatgpt.com)
 * [Vue Style Guide (Official)](https://vuejs.org/style-guide/?utm_source=chatgpt.com)
 * [Pinia Documentation](https://pinia.vuejs.org/core-concepts/?utm_source=chatgpt.com)
 * [Vue Router Lazy Loading](https://router.vuejs.org/guide/advanced/lazy-loading.html?utm_source=chatgpt.com)
