@@ -503,7 +503,6 @@ The global router only aggregates routes.
 ```txt
 src/
   App.vue
-
   main.js
 
   app/
@@ -512,17 +511,20 @@ src/
       routes.js
 
   features/
-
     tasks/
-
       model/
         Task.js
+        Task.test.js
 
       services/
         listTasks.js
+        listTasks.test.js
         createTask.js
+        createTask.test.js
         toggleTask.js
+        toggleTask.test.js
         deleteTask.js
+        deleteTask.test.js
 
       api/
         taskApi.js
@@ -532,27 +534,31 @@ src/
         createTasksDependencies.js
 
       presentation/
+        routes.js
 
         views/
           TasksView.vue
+          TasksView.test.js
           NewTaskView.vue
+          NewTaskView.test.js
 
         components/
           TaskItem.vue
+          TaskItem.test.js
           TaskSection.vue
+          TaskSection.test.js
           TaskForm.vue
+          TaskForm.test.js
 
         composables/
           useTasksViewModel.js
+          useTasksViewModel.test.js
 
         store/
           useTasksStore.js
-
-      routes.js
-      index.js
+          useTasksStore.test.js
 
   shared/
-
     components/
       AppButton.vue
       AppInput.vue
@@ -568,7 +574,6 @@ src/
       env.js
 
   design/
-
     styles/
       main.css
       reset.css

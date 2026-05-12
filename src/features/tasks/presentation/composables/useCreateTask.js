@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTasksStore } from '../store/useTasksStore.js'
 import { clearFocus } from '@/shared/utils/clearFocus.js'
-import { createTaskUseCase } from '../application/createTaskUseCase.js'
+import { createTask } from '../../services/createTask.js'
 
 export function useCreateTask() {
   const router = useRouter()
@@ -21,7 +21,7 @@ export function useCreateTask() {
   function submit() {
     if (!isFormValid.value) return
 
-    const task = createTaskUseCase({ title: title.value, description: description.value })
+    const task = createTask({ title: title.value, description: description.value })
 
     store.addTask(task)
     resetForm()

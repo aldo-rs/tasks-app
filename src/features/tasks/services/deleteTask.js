@@ -8,7 +8,7 @@
  * @returns {string}
  * @throws {Error} if id is missing
  */
-export function deleteTaskUseCase(id) {
+export function deleteTask(id) {
   if (!id) {
     throw new Error('Se requiere un id para eliminar la tarea')
   }

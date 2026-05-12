@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { Task } from '../domain/Task.js'
+import { Task } from '../../model/Task.js'
 import { useTasksStore } from './useTasksStore.js'
 
 describe('useTasksStore', () => {

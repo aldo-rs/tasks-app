@@ -3,8 +3,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { alertController, toastController } from '@ionic/vue'
 import { useTasksStore } from '../store/useTasksStore.js'
 import { clearFocus } from '@/shared/utils/clearFocus.js'
-import { updateTaskUseCase } from '../application/updateTaskUseCase.js'
-import { deleteTaskUseCase } from '../application/deleteTaskUseCase.js'
+import { updateTask } from '../../services/updateTask.js'
+import { deleteTask as deleteTaskService } from '../../services/deleteTask.js'
 
 export function useEditTask() {
   const route = useRoute()
@@ -40,7 +40,7 @@ export function useEditTask() {
     const currentTask = store.getTaskById(taskId.value)
     if (!currentTask) return
 
-    const updatedTask = updateTaskUseCase(currentTask, {
+    const updatedTask = updateTask(currentTask, {
       title: title.value,
       description: description.value,
     })
@@ -69,7 +69,7 @@ export function useEditTask() {
           role: 'destructive',
           handler: async () => {
             clearFocus()
-            const id = deleteTaskUseCase(taskId.value)
+            const id = deleteTaskService(taskId.value)
             store.deleteTask(id)
 
             const toast = await toastController.create({

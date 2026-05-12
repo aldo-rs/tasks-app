@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { Task } from '@/features/tasks/domain/Task.js'
+import { Task } from '@/features/tasks/model/Task.js'
 
 export const useTasksStore = defineStore('tasks', () => {
   const tasks = ref([])

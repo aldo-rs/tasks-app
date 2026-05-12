@@ -1,4 +1,4 @@
-import { Task } from '../domain/Task.js'
+import { Task } from '../model/Task.js'
 /**
  * Builds an updated version of an existing task with the given edits.
  * Returns a new Task instance. Does not mutate the original.
@@ -9,7 +9,7 @@ import { Task } from '../domain/Task.js'
  * @returns {Task}
  * @throws {Error} if the resulting task would be invalid
  */
-export function updateTaskUseCase(currentTask, { title, description = '' }) {
+export function updateTask(currentTask, { title, description = '' }) {
   const updatedTask = new Task({
     id: currentTask.id,
     title: title.trim(),

@@ -1,4 +1,4 @@
-import { Task } from '../domain/Task.js'
+import { Task } from '../model/Task.js'
 
 /**
  * Creates a new task from the given fields.
@@ -8,7 +8,7 @@ import { Task } from '../domain/Task.js'
  * @returns {Task}
  * @throws {Error} if the task is invalid
  */
-export function createTaskUseCase({ title, description = '' }) {
+export function createTask({ title, description = '' }) {
   const task = new Task({
     id: crypto.randomUUID(),
     title: title.trim(),

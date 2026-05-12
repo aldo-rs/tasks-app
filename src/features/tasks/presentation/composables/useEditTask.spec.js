@@ -14,12 +14,12 @@ const routeState = {
   params: { id: '1' },
 }
 
-vi.mock('../application/updateTaskUseCase.js', () => ({
-  updateTaskUseCase: vi.fn((currentTask, edits) => ({ ...currentTask, ...edits })),
+vi.mock('../../services/updateTask.js', () => ({
+  updateTask: vi.fn((currentTask, edits) => ({ ...currentTask, ...edits })),
 }))
 
-vi.mock('../application/deleteTaskUseCase.js', () => ({
-  deleteTaskUseCase: vi.fn((id) => id),
+vi.mock('../../services/deleteTask.js', () => ({
+  deleteTask: vi.fn((id) => id),
 }))
 
 vi.mock('vue-router', () => ({
