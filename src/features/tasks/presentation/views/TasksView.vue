@@ -48,6 +48,10 @@ const store = useTasksStore()
 </template>
 
 <style scoped>
+ion-fab {
+  margin-bottom: var(--ion-safe-area-bottom, 0);
+}
+
 .tasks-header,
 .tasks-toolbar {
   border: 0;
@@ -78,7 +82,7 @@ const store = useTasksStore()
 
 .tasks-title {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: var(--font-weight-title);
   font-family: var(--font-family);
   color: var(--color-text);
