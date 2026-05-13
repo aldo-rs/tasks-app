@@ -75,5 +75,23 @@ describe('TaskList', () => {
     expect(wrapper.text()).toContain('completadas 🎉')
     expect(wrapper.text()).toContain('¡Buen Trabajo!')
   })
+
+  it('should show the empty state image when there are no tasks', () => {
+    const wrapper = mount(TaskList, {
+      props: {
+        pendingTasks: [],
+        completedTasks: [],
+      },
+      global: {
+        stubs: {
+          IonIcon: true,
+        },
+      },
+    })
+
+    const img = wrapper.find('.task-list__empty img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('alt')).toBe('Lista de tareas vacía')
+  })
 })
 

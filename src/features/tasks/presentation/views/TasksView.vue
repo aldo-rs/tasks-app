@@ -36,6 +36,7 @@ const store = useTasksStore()
 
       <IonFab slot="fixed" vertical="bottom" horizontal="end">
         <IonFabButton
+          class="tasks-fab"
           color="pdm-primary"
           aria-label="Añadir tarea"
           @click="router.push({ name: 'tasks.new' })"
@@ -87,6 +88,16 @@ ion-fab {
   font-family: var(--font-family);
   color: var(--color-text);
   padding-inline: 0;
+}
+
+.tasks-fab {
+  width: 64px;
+  height: 64px;
+  --border-radius: 50%;
+}
+
+.tasks-fab ion-icon {
+  font-size: 30px;
 }
 
 /* Small per-mode tweak so title appears visually centered in iOS and MD */

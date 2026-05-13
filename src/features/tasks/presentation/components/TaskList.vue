@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { chevronDownOutline } from 'ionicons/icons'
 import TaskItem from './TaskItem.vue'
+import emptyTasksImage from '@/assets/empty-tasks-2.png'
 
 const isCompletedCollapsed = ref(false)
 const emit = defineEmits(['toggle-task', 'edit-task'])
@@ -74,6 +75,7 @@ defineProps({
 
     <!-- Empty state -->
     <div v-if="pendingTasks.length === 0 && completedTasks.length === 0" class="task-list__empty">
+      <img :src="emptyTasksImage" alt="Lista de tareas vacía" class="task-list__empty-image" />
       <p class="task-list__empty-text">No tienes tareas pendientes</p>
 
       <p class="task-list__empty-hint">Pulsa + para añadir tu primera tarea</p>
@@ -134,9 +136,14 @@ defineProps({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   padding: var(--space-2xl) var(--space-md);
   text-align: center;
+}
+
+.task-list__empty-image {
+  width: min(220px, 65vw);
+  margin-bottom: var(--space-sm);
 }
 
 .task-list__empty-text {
