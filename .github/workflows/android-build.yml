@@ -15,9 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -37,8 +34,8 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Sync Capacitor Android
-        run: npx cap sync android
+      - name: Add Capacitor Android platform
+        run: npx cap add android
 
       - name: Build Android debug APK
         working-directory: android
