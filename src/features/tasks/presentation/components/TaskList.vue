@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { chevronDownOutline } from 'ionicons/icons'
 import TaskItem from './TaskItem.vue'
-import emptyTasksImage from '@/assets/empty-tasks-2.png'
+import emptyTasksImage from '@/assets/empty-tasks-final-2.png'
 
 const isCompletedCollapsed = ref(false)
 const emit = defineEmits(['toggle-task', 'edit-task'])
@@ -142,12 +142,12 @@ defineProps({
 }
 
 .task-list__empty-image {
-  width: min(220px, 65vw);
-  margin-bottom: var(--space-sm);
+  width: min(200px, 65vw);
+  margin-bottom: var(--space-xl);
 }
 
 .task-list__empty-text {
-  font-size: 1.2rem;
+  font-size: 1.07rem;
   font-weight: var(--font-weight-label);
   color: var(--color-text);
 }
